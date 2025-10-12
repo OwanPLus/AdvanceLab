@@ -1,0 +1,24 @@
+
+
+void setup() {
+  
+  Serial.begin(9600);
+
+}
+
+void loop() {
+  
+  int sensorValue = analogRead(A0);
+  
+  // in a range of 0 to 1023 where 0 is 0 Volts and 1023 is equal 5 Volts
+
+Serial.print(millis());
+Serial.print(',');
+Serial.println(sensorValue);
+  
+  // We don't need a lot of measurements, so the delay function
+  // will insert a 1000 millisecond (1.0 second) delay between each
+  // loop. 
+
+  delay(1000);
+}
