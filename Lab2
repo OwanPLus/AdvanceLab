@@ -1,0 +1,36 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import os
+import math
+import pandas as pd
+
+#Add pathway to Data
+file_path = r"/thermositer.csv"
+
+# If you have a CSV file with time, voltage data
+df = pd.read_csv(file_path, header=None, names=['time_ms', 'analog_value'])
+time_ms = df['time_ms'].values
+analog_values = df['analog_value'].values
+
+R0 = 3300  # Resistance at 25°C (10kΩ)
+T0 = 298.15  # Reference temperature in Kelvin (25°C)
+B = 3977     # Beta value 
+R_series = 1000  # Series resistor value in voltage divider
+
+V_in = 5.0  # Arduino reference voltage (5V)
+
+time_s = time_ms / 1000.0
+
+voltage_measured = analog_values * V_in / 1023.0
+
+R_therm = R_series * (V_in / voltage_measured - 1)
+
+T_kelvin = 1 / (1/T0 + (1/B) * np.log(R_therm/R0))
+
+fig, ax = plt.subplots(figsize=(10, 6))
+
+ax.plot(time_s, T_kelvin, 'b-', linewidth=2)
+ax.set_xlabel('Time (s)', fontsize=12)
+ax.set_ylabel('Temperature (K)', fontsize=12)
+ax.set_title('Temperature vs Time', fontsize=14)
+ax.grid(True, alpha=0.3)
