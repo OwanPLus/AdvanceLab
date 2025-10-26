@@ -1,5 +1,8 @@
-import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
+import os
+import math
+import pandas as pd
 
 df = pd.read_csv('AdvanceLabL3Data.csv')
 
@@ -8,6 +11,26 @@ pot_values = df.iloc[:, 1]
 therm_values = df.iloc[:, 2]
 
 time_s = time_ms / 1000
+
+R0 = 3300  # Resistance at 25°C (10kΩ)
+T0 = 298.15  # Reference temperature in Kelvin (25°C)
+B = 3977     # Beta value
+R_series = 1000  # Series resistor value in voltage divider
+V_in = 5.0  # Arduino reference voltage (5V)
+
+voltage_measured = therm_values * V_in / 1023.0
+
+R_therm = R_series * (V_in / voltage_measured - 1)
+
+T_kelvin = 1 / (1/T0 + (1/B) * np.log(R_therm/R0))
+
+fig, ax = plt.subplots(figsize=(10, 6))
+
+ax.plot(time_s, T_kelvin, 'b-', linewidth=2)
+ax.set_xlabel('Time (s)', fontsize=12)
+ax.set_ylabel('Temperature (K)', fontsize=12)
+ax.set_title('Temperature vs Time', fontsize=14)
+ax.grid(True, alpha=0.3)
 
 fig, ax1 = plt.subplots(figsize=(12, 8))
 
