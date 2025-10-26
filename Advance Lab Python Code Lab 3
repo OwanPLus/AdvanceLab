@@ -1,0 +1,40 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+df = pd.read_csv('AdvanceLabL3Data.csv')
+
+time_ms = df.iloc[:, 0]
+pot_values = df.iloc[:, 1]
+therm_values = df.iloc[:, 2]
+
+time_s = time_ms / 1000
+
+fig, ax1 = plt.subplots(figsize=(12, 8))
+
+# Potentiometer
+color1 = 'blue'
+ax1.set_xlabel('Time [s]', fontsize=12)
+ax1.set_ylabel('Potentiometer Value [AU]', color=color1, fontsize=12)
+ax1.plot(time_s, pot_values, color=color1, linewidth=2, label='Potentiometer')
+ax1.tick_params(axis='y', labelcolor=color1)
+ax1.set_ylim(0, 1023) 
+
+#  Thermistor
+ax2 = ax1.twinx()
+color2 = 'red'
+ax2.set_ylabel('Thermistor Value [AU]', color=color2, fontsize=12)
+ax2.plot(time_s, therm_values, color=color2, linewidth=2, label='Thermistor')
+ax2.tick_params(axis='y', labelcolor=color2)
+ax2.set_ylim(210, 240) 
+
+# Title and Grid
+plt.title('Potentiometer and Thermistor Values vs Time', fontsize=14)
+ax1.grid(True, alpha=0.3)
+
+# Legend
+lines1, labels1 = ax1.get_legend_handles_labels()
+lines2, labels2 = ax2.get_legend_handles_labels()
+ax1.legend(lines1 + lines2, labels1 + labels2, loc='upper right')
+
+plt.tight_layout()
+plt.show()
