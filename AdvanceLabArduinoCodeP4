@@ -1,0 +1,21 @@
+void setup() {
+  Serial.begin(500000);  // Fixed baud rate (was 50000)
+}
+
+void loop() {
+  unsigned long currentTime = 0;
+  unsigned long lastTime = 0;
+  const unsigned long intervalBetweenData = 1000;
+  
+  // get the current time in microseconds
+  currentTime = micros();
+  
+  if (currentTime - lastTime >= intervalBetweenData) {
+    int sensorValue = analogRead(A0);
+    lastTime += intervalBetweenData;
+    
+    Serial.print(currentTime/1000);
+    Serial.print(',');
+    Serial.println(sensorValue);
+  }
+}
