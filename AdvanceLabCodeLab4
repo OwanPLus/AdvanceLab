@@ -1,0 +1,54 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import os
+import math
+import pandas as pd
+
+df = pd.read_csv('AdvanceLabData4.cvs', on_bad_lines='skip')
+
+time_ms = pd.to_numeric(df.iloc[:, 0], errors='coerce')
+data = pd.to_numeric(df.iloc[:, 1], errors='coerce')
+
+# Drop rows where time_ms or data became NaN due to coercion errors
+df_cleaned = pd.DataFrame({'time_ms': time_ms, 'data': data}).dropna()
+time_ms = df_cleaned['time_ms']
+data = df_cleaned['data']
+
+# Convert time to seconds and calculate sampling rate
+time_seconds = time_ms / 1000.0  # Convert ms to seconds
+dt = np.mean(np.diff(time_seconds))  # Average time step
+fs = 1 / dt  # Sampling frequency (Hz)
+
+print(f"Sampling rate: {fs:.2f} Hz")
+print(f"Number of samples: {len(data)}")
+
+# Perform FFT
+fft_result = np.fft.fft(data)
+frequencies = np.fft.fftfreq(len(data), dt)
+
+# Calculate magnitude and positive frequencies for plotting
+magnitude = np.abs(fft_result)
+positive_freq_idx = np.where(frequencies >= 0)
+
+# Plot results
+plt.figure(figsize=(12, 8))
+
+# Time domain plot
+plt.subplot(2, 1, 1)
+plt.plot(time_seconds, data)
+plt.title('Time Domain Signal')
+plt.xlabel('Time (s)')
+plt.ylabel('Sensor Value')
+plt.grid(True)
+
+# Frequency domain plot
+plt.subplot(2, 1, 2)
+plt.plot(frequencies[positive_freq_idx], magnitude[positive_freq_idx])
+plt.title('Frequency Spectrum (FFT)')
+plt.xlabel('Frequency (Hz)')
+plt.ylabel('Magnitude')
+plt.grid(True)
+plt.xlim(0, min(3, frequencies[positive_freq_idx].max()))  # Limit x-axis
+
+plt.tight_layout()
+plt.show()
