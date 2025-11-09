@@ -9,7 +9,7 @@ df = pd.read_csv('AdvanceLabData4.cvs', on_bad_lines='skip')
 time_ms = pd.to_numeric(df.iloc[:, 0], errors='coerce')
 data = pd.to_numeric(df.iloc[:, 1], errors='coerce')
 
-# Drop rows where time_ms or data became NaN due to coercion errors
+# Error Correcting
 df_cleaned = pd.DataFrame({'time_ms': time_ms, 'data': data}).dropna()
 time_ms = df_cleaned['time_ms']
 data = df_cleaned['data']
@@ -19,10 +19,6 @@ time_seconds = time_ms / 1000.0  # Convert ms to seconds
 dt = np.mean(np.diff(time_seconds))  # Average time step
 fs = 1 / dt  # Sampling frequency (Hz)
 
-print(f"Sampling rate: {fs:.2f} Hz")
-print(f"Number of samples: {len(data)}")
-
-# Perform FFT
 fft_result = np.fft.fft(data)
 frequencies = np.fft.fftfreq(len(data), dt)
 
@@ -48,7 +44,7 @@ plt.title('Frequency Spectrum (FFT)')
 plt.xlabel('Frequency (Hz)')
 plt.ylabel('Magnitude')
 plt.grid(True)
-plt.xlim(0, min(3, frequencies[positive_freq_idx].max()))  # Limit x-axis
+plt.xlim(0, min(10, frequencies[positive_freq_idx].max()))  # Limit x-axis
 
 plt.tight_layout()
 plt.show()
