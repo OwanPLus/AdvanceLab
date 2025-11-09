@@ -44,6 +44,7 @@ plt.xlabel('Frequency (Hz)')
 plt.ylabel('Magnitude')
 plt.grid(True)
 plt.xlim(0, min(10, frequencies[positive_freq_idx].max())) 
+plt.ylim(0, 0.2 * np.max(magnitude[positive_freq_idx]))
 
 plt.tight_layout()
 plt.show()
