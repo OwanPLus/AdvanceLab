@@ -14,15 +14,14 @@ df_cleaned = pd.DataFrame({'time_ms': time_ms, 'data': data}).dropna()
 time_ms = df_cleaned['time_ms']
 data = df_cleaned['data']
 
-# Convert time to seconds and calculate sampling rate
 time_seconds = time_ms / 1000.0  # Convert ms to seconds
 dt = np.mean(np.diff(time_seconds))  # Average time step
 fs = 1 / dt  # Sampling frequency (Hz)
 
+# FFT analysis step
 fft_result = np.fft.fft(data)
 frequencies = np.fft.fftfreq(len(data), dt)
 
-# Calculate magnitude and positive frequencies for plotting
 magnitude = np.abs(fft_result)
 positive_freq_idx = np.where(frequencies >= 0)
 
@@ -44,7 +43,7 @@ plt.title('Frequency Spectrum (FFT)')
 plt.xlabel('Frequency (Hz)')
 plt.ylabel('Magnitude')
 plt.grid(True)
-plt.xlim(0, min(10, frequencies[positive_freq_idx].max()))  # Limit x-axis
+plt.xlim(0, min(10, frequencies[positive_freq_idx].max())) 
 
 plt.tight_layout()
 plt.show()
