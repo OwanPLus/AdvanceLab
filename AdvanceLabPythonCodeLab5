@@ -1,0 +1,62 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+
+# Read data
+df1 = pd.read_csv('AdvanceLabData5.csv')
+
+time_ms = pd.to_numeric(df1.iloc[:, 0])
+data = pd.to_numeric(df1.iloc[:, 1])
+unfiltered = pd.to_numeric(df1.iloc[:, 2])
+
+
+# Create plot
+fig, ax1 = plt.subplots(figsize=[10, 6])
+
+# Plot both datasets
+ax1.plot(time_ms, data, 'b-', linewidth=1, label='Filtered Data')
+ax1.plot(time_ms, unfiltered, 'r-', linewidth=1, alpha=0.7, label='Unfiltered Data')
+ax1.set_xlabel('Time [s]')
+ax1.set_ylabel('Signal')
+ax1.set_xlim(0,500)
+ax1.legend()
+ax1.grid(True, alpha=0.3)
+
+plt.title('Comparison of Raw and Filtered Signals')
+plt.tight_layout()
+plt.show()
+
+____________________________________________________________________________________________________________________________________________________________________________________________
+
+# Constants
+R = 22  # Resistance in ohms
+C = 100e-6  # Capacitance in farads
+
+# Frequency range
+frequencies = np.logspace(1, 4, 400)  # 10 Hz to 10 kHz
+omega = 2 * np.pi * frequencies
+H = 1 / (1 + 1j * omega * R * C)
+# Magnitude in dB
+magnitude = 20 * np.log10(abs(H))
+
+#cutoff frequency
+fc = 1 / (2 * np.pi * R * C)
+print("The cutoff frequency is", fc)
+
+# Plot magnitude
+plt.figure()
+plt.subplot(2, 1, 1)
+plt.semilogx(frequencies, magnitude)
+plt.title('Bode Plot of RC Low Pass Filter')
+plt.xlabel('Frequency (Hz)')
+plt.ylabel('Magnitude (dB)')
+plt.axvline(fc, color='r', linestyle='--', label='Cutoff Frequency',)
+x_coord = fc
+y_coord = magnitude[np.argmin(np.abs(frequencies - fc))] - 6
+plt.text(x_coord-5, y_coord-10, 'Cutoff Frequency = 60 Hz', fontsize=9, color='red', ha= 'right')
+plt.text(x_coord, y_coord, 'R = 22 Ω, C = 100 µF ', fontsize=9, color='green', ha= 'right')
+plt.legend()
+plt.grid(True)
+
+plt.tight_layout()
+plt.show()
