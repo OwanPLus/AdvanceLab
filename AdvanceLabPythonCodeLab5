@@ -60,3 +60,35 @@ plt.grid(True)
 
 plt.tight_layout()
 plt.show()
+____________________________________________________________________________________________________________________________________________
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+from scipy.fft import fft, fftfreq 
+
+# Read data
+df1 = pd.read_csv('AdvanceLabData4(2).csv')
+
+time_ms = pd.to_numeric(df1.iloc[:, 0])
+data = pd.to_numeric(df1.iloc[:, 1])
+unfiltered = pd.to_numeric(df1.iloc[:, 2])
+
+N = len(unfiltered)
+yf_lp = fft(unfiltered)
+xf_lp = fftfreq(N, 1/1000)
+
+M = len(data)
+yf_sp = fft(data)
+xf_sp = fftfreq(M, 1/1000) 
+
+fig, ax = plt.subplots(figsize=[10, 6])
+ax.plot(xf_sp, np.abs(yf_sp), color='blue', label='Square Wave')
+ax.plot(xf_lp, np.abs(yf_lp), color='red', label='Low Pass')   
+
+ax.set_xlabel('Frequency (Hz)') 
+ax.set_ylabel('Amplitude')
+ax.set_title('Frequency Spectrum')
+ax.legend()
+ax.grid(True)
+ax.set_xlim(0, 200) 
+plt.show()
