@@ -12,7 +12,7 @@ void setup() {
 void loop() {
   unsigned long t = millis();
   int gtg = analogRead(A0);
-  int f = analogRead(A1);
+  int f = analogRead(A2);
 
   Serial.print(t);
   Serial.print(',');
