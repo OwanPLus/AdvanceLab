@@ -1,0 +1,38 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import os
+import math
+import pandas as pd
+
+df = pd.read_csv('AdvanceLabData6.cvs', on_bad_lines='skip')
+
+time_ms = pd.to_numeric(df.iloc[:, 0], errors='coerce')
+average1 = pd.to_numeric(df.iloc[:, 1], errors='coerce')
+average5 = pd.to_numeric(df.iloc[:, 2], errors='coerce')
+average10 = pd.to_numeric(df.iloc[:, 3], errors='coerce')
+
+# Error Correcting
+df_cleaned = pd.DataFrame({'time_ms': time_ms, 'avergage1': average1, 'average5': average5, 'average10': average10}).dropna()
+time_ms = df_cleaned['time_ms']
+average1 = df_cleaned['average1']
+average5 = df_cleaned['average5']
+average10 = df_cleaned['average10']
+
+time_s = time_ms / 1000
+
+# Create plot
+fig, ax1 = plt.subplots(figsize=[10, 6])
+
+# Plot both datasets
+ax1.plot(time_s, average1, 'b-', linewidth=1, label='Averaging 1')
+ax1.plot(time_s, average5, 'r-', linewidth=1, alpha=0.7, label='Average 5')
+ax1.plot(time_s, average10, 'g-', linewidth=1, alpha=0.7, label='Average 10')
+ax1.set_xlabel('Time [s]')
+ax1.set_ylabel('Brightness [Au]')
+ax1.set_xlim(0,100)
+ax1.legend()
+ax1.grid(True, alpha=0.3)
+
+plt.title('Comparison of Arduino Smoothing')
+plt.tight_layout()
+plt.show()
