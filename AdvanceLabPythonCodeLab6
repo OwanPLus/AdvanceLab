@@ -30,3 +30,25 @@ ax.set_ylabel('Brightness')
 ax.legend()
 ax.set_xlim(7,10)
 plt.show()
+
+
+___________________________________________________________________________________________________________________________________
+
+import numpy as np
+import matplotlib.pyplot as plt
+import os
+import pandas as pd
+
+df = pd.read_csv('AdvanceLabData6.csv', on_bad_lines='skip')
+time_ms = pd.to_numeric(df.iloc[:, 0], errors='coerce')
+a2 = pd.to_numeric(df.iloc[:, 1], errors='coerce')
+t_s = time_ms/1000
+
+
+fig,ax = plt.subplots()
+ax.plot(t_s, a2)
+ax.set_xlabel('Time')
+ax.set_ylabel('Brightness')
+ax.set_xlim(2.5,7.5)
+plt.show()
+
