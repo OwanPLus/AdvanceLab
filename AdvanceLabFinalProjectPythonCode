@@ -3,12 +3,13 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.signal import find_peaks
 
-# Read data
-df = pd.read_csv('AdvanceLabData7.csv', comment='#')
+df = pd.read_csv('AdvanceLabData7.csv', comment='#', header=None)
+df.columns = ['time_s', 'angle_deg', 'velocity_degs']
+
 t = df['time_s'].values
 θ = df['angle_deg'].values
-
 ω_dot = df['velocity_degs'].values
+
 θ_rad, ω_rad = np.radians(θ), np.radians(ω_dot)
 ω_o = 2 * np.pi * 0.8
 E = 0.5 * ω_rad**2 + 0.5 * ω_o**2 * θ_rad**2
