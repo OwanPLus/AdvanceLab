@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.signal import find_peaks
 
+# Read data
 df = pd.read_csv('AdvanceLabData7.csv', comment='#', header=None)
 df.columns = ['time_s', 'angle_deg', 'velocity_degs']
 
@@ -10,26 +11,37 @@ t = df['time_s'].values
 θ = df['angle_deg'].values
 ω_dot = df['velocity_degs'].values
 
+ω_dot = df['velocity_degs'].values
 θ_rad, ω_rad = np.radians(θ), np.radians(ω_dot)
-ω_o = 2 * np.pi * 0.8
-E = 0.5 * ω_rad**2 + 0.5 * ω_o**2 * θ_rad**2
+ω_0 = 2 * np.pi * 0.8
+E = 0.5 * ω_rad**2 + 0.5 * ω_0**2 * θ_rad**2
 peaks, _ = find_peaks(E, distance=20)
 γ_energy = -np.polyfit(t[peaks], np.log(E[peaks]), 1)[0]
+
+γ_theoretical = 0.25  
+
+A = np.max(np.abs(θ[:50])) 
+θ_theoretical = A * np.exp(-γ_theoretical * t/2) * np.cos(ω_0 * t)
+
+E0 = E[peaks[0]] if len(peaks) > 0 else np.max(E)
+E_theoretical = E0 * np.exp(-γ_theoretical * t)
 
 # Plot
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4))
 
-ax1.plot(t, θ, 'b-', alpha=0.6, label='Pendulum Angle')
+ax1.plot(t, θ, 'b-', alpha=0.6, label='Experimental')
+ax1.plot(t, θ_theoretical, 'r--', linewidth=2, label=f'Theoretical (γ={γ_theoretical} s⁻¹)')
 ax1.set_xlabel('Time (s)')
 ax1.set_ylabel('Angle (deg)')
-ax1.set_title('Damped Pendulum Oscillation')
+ax1.set_title('Angle Decay')
 ax1.legend()
 ax1.grid(True, alpha=0.3)
 
-ax2.semilogy(t, E, 'g-', alpha=0.6, label='Mechanical Energy')
-ax2.semilogy(t[peaks], E[peaks], 'ro', label=f'Energy Peaks')
+ax2.semilogy(t, E, 'g-', alpha=0.6, label='Experimental')
+ax2.semilogy(t[peaks], E[peaks], 'ro', label='Experimental Peaks')
+ax2.semilogy(t, E_theoretical, 'b--', linewidth=2, label=f'Theoretical (γ={γ_theoretical} s⁻¹)')
 ax2.set_xlabel('Time (s)')
-ax2.set_ylabel('Energy')
+ax2.set_ylabel('log(Energy)')
 ax2.set_title(f'Energy Decay')
 ax2.legend()
 ax2.grid(True, alpha=0.3)
