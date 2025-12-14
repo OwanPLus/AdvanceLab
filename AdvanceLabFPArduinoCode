@@ -1,0 +1,63 @@
+const int encoderPinA = 2;  // Green wire
+const int encoderPinB = 3;  // White wire
+
+volatile long encoderPos = 0;
+volatile int lastEncoded = 0;
+
+const float DEGREES_PER_PULSE = 0.15;  // 360/2400
+const int SAMPLE_INTERVAL = 20;  // 50 Hz (20ms)
+
+unsigned long lastTime = 0;
+long lastPosition = 0;
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(encoderPinA, INPUT);
+  pinMode(encoderPinB, INPUT);
+  
+  attachInterrupt(digitalPinToInterrupt(encoderPinA), updateEncoder, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(encoderPinB), updateEncoder, CHANGE);
+  
+  Serial.println("Time_ms,Angle_deg,Velocity_deg_s");
+  
+  lastTime = millis();
+  lastPosition = encoderPos;
+}
+
+void loop() {
+  unsigned long currentTime = millis();
+  
+  if (currentTime - lastTime >= SAMPLE_INTERVAL) {
+    long currentPos = encoderPos;
+    
+    // Calculate angle
+    float angle = currentPos * DEGREES_PER_PULSE;
+    
+    // Calculate velocity
+    float deltaTime = (currentTime - lastTime) / 1000.0;  // seconds
+    long deltaPos = currentPos - lastPosition;
+    float velocity = (deltaPos * DEGREES_PER_PULSE) / deltaTime;
+    
+    // Output data
+    Serial.print(currentTime);
+    Serial.print(",");
+    Serial.print(angle, 3);
+    Serial.print(",");
+    Serial.println(velocity, 3);
+    
+    lastTime = currentTime;
+    lastPosition = currentPos;
+  }
+}
+
+void updateEncoder() {
+  int MSB = digitalRead(encoderPinA);
+  int LSB = digitalRead(encoderPinB);
+  int encoded = (MSB << 1) | LSB;
+  int sum = (lastEncoded << 2) | encoded;
+  
+  if (sum == 0b1101 || sum == 0b0100 || sum == 0b0010 || sum == 0b1011) encoderPos++;
+  if (sum == 0b1110 || sum == 0b0111 || sum == 0b0001 || sum == 0b1000) encoderPos--;
+  
+  lastEncoded = encoded;
+}
